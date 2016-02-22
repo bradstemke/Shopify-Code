@@ -1,0 +1,6 @@
+If you would like to request information from a buyer, such an engraving details, you can add a line item property to your product page to request that information. Just insert the following code snippet to add a line property to any product page:
+
+<div class="product-form__item product-form__item--lip">
+  <label for="Engraving">Engraving</label>
+  <input type="text" id="engraving" name="properties[Engraving]">
+</div>

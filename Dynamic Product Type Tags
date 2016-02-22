@@ -1,0 +1,16 @@
+Dynamic product type tags are a great way to improve the buying experience in your client’s store. Dynamic product type tags make it easy for buyers to click on a product type, such as jackets, and browse all similar product types. Buyers can also click on particular tags like brand, year, women, or men depending on the tags set up on the store. The following code snippet will create a clickable dynamic product type tag and will list all associated tags for that product which will also be clickable.
+
+Show vendor:
+<p>Type: {{ product.type | link_to_type }}</p>
+
+Display and add links to all product tags:
+{% if product.tags.size > 0 %}
+  <div class="product-single__tags">
+    <p>Tags:
+      {% for tag in product.tags %}
+      {% assign tag_coll = '/collections/all/' | append: tag %}
+        {{ tag | capitalize | link_to: tag_coll }}{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    </p>
+  </div>
+{% endif %}

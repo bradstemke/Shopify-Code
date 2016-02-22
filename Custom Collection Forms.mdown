@@ -1,0 +1,142 @@
+Advanced Theme Technique 4: Custom collection templates
+
+In the partner session, we discussed how we can create an order form from a collection using a custom collection template. Your client may have buyers who buy products in bulk and an order form is a good way to improve that buying experience. The following code will create an order form for our collection. To learn more about the following code, check out our documentation.
+
+{% comment %}
+  Source: https://gist.github.com/carolineschnapp/9122054
+  If you are not on a collection page, do define which collection to use in the order form.
+  Use the following assign statement, replace 'your-collection-handle-here' with your collection handle.
+  {% assign collection = collections.your-collection-handle-here %}
+  Use the assign statement outside of this comment block at the top of your template.
+  {% endcomment %}
+
+  {% paginate collection.products by 100 %}
+
+  {% if collection.products_count > 0 %}
+  <div class="action-bar top clearfix">
+    <h1 class="left">{% if template contains 'page' %}{{ page.title }}{% else %}{{ collection.title }}{% endif %}</h1>
+    <input class="action-button submit button btn right add-to-cart-order-form" type="button" value="Add to the cart" />
+  </div>
+  {% else %}
+  <h1>{% if template contains 'page' %}{{ page.title }}{% else %}{{ collection.title }}{% endif %}</h1>
+  {% endif %}
+
+  {% if template contains 'page' and page.content.size > 0 %}
+  <div class="rte">
+  {{ page.content }}
+  </div>
+  {% elsif collection.description.size > 0 %}
+  <div class="rte">
+  {{ collection.description }}
+  </div>
+  {% endif %}
+
+  {% if collection.products_count > 0 %}
+  {{ 'http://yui.yahooapis.com/pure/0.4.2/tables-min.css' | stylesheet_tag }}
+  <table class="pure-table pure-table-bordered">
+    <tbody>
+    {% for product in collection.products %}
+      {% if product.available %}
+        {% for variant in product.variants %}
+          {% if variant.available %}
+          <tr class="{% cycle 'pure-table-odd', '' %}">
+            <td>
+              <a href="{{ product.url | collection }}">
+                <img src="{{ product.featured_image.src | product_img_url: 'thumb' }}" alt="{{ product.featured_image.alt | escape }}" />
+              </a>
+            </td>
+            <td>
+              <a href="{{ product.url | collection }}">
+               {{ product.title }}{% unless variant.title contains 'Default' %} - {{ variant.title }}{% endunless %}{% unless variant.sku == '' %} - {{ variant.sku }}{% endunless %}
+              </a>
+            </td>
+            <td>
+               {{ variant.price | money }}
+            </td>
+            <td style="text-align:right;">
+              <input onfocus="this.select()" class="quantity field" data-id="{{ variant.id }}" min="0" {% unless item.variant.inventory_management == blank or item.variant.inventory_policy == 'continue' %}{% assign max = variant.inventory_quantity %}{% for item in cart.items %}{% if item.id == variant.id %}{% assign max = max | minus: item.quantity %}{% endif %}{% endfor %} max="{{ max }}" {% endunless %} type="text" value="0" tabindex="1" />
+            </td>
+          </tr>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    {% endfor %}
+    </tbody>
+  </table>
+  <div class="action-bar clearfix">
+    <input class="action-button submit button btn right add-to-cart-order-form" type="button" value="Add to the cart" />
+  </div>
+  {% else %}
+  <p>There are no products in this view.</p>
+  {% endif %}
+
+  {% endpaginate %}
+
+  {% if collection.products_count > 0 %}
+  <script>
+  Shopify.itemsToAdd = [];
+  Shopify.addItemstoTheCart = function() {
+    if (Shopify.itemsToAdd.length) {
+      var item = Shopify.itemsToAdd.pop();
+      $.ajax({
+        url: '/cart/add',
+        dataType: 'json',
+        type: 'post',
+        data: item,
+        success: Shopify.addItemstoTheCart,
+        error: Shopify.addItemstoTheCart
+      });
+    }
+    else {
+      window.location.href = '/cart';
+    }
+  };
+  jQuery(function($) {
+    $('table .quantity:first').focus();
+    $('[max]').change(function() {
+      var max = parseInt($(this).attr('max'), 10);
+      var value = parseInt($(this).val(), 10) || 0;
+      if (value > max) {
+        alert('We only have ' + max + ' of this item in stock');
+        $(this).val(max);
+      }
+    });
+    $('.add-to-cart-order-form').click(function() {
+      $('.add-to-cart-order-form').addClass('disabled').attr('disabled','disabled');
+      // Resetting.
+      Shopify.itemsToAdd = [];
+      $('.quantity').each(function() {
+        var quantity = parseInt($(this).val(), 10);
+        if (quantity) {
+          Shopify.itemsToAdd.push( { id: $(this).attr('data-id'), quantity: quantity } );
+        }
+      });
+      if (Shopify.itemsToAdd.length) {
+        Shopify.addItemstoTheCart();
+      }
+      else {
+        alert('All quantities are set to zero.');
+        $('.add-to-cart-order-form').removeAttr('disabled').removeClass('disabled');
+      }
+    });
+  });
+  </script>
+  {% endif %}
+
+  <style>
+  .action-bar { margin: 15px 0; }
+  .action-bar.top { margin: 30px 0 0; }
+  .action-bar h1 { margin:0; padding: 0; line-height:1 }
+  .left { float: left; }
+  .right { float: right; }
+  .clearfix:before, .clearfix:after { content: ""; display: table; }
+  .clearfix:after { clear: both; }
+  .clearfix { zoom: 1; }
+  /* Additional styles for table */
+  table.pure-table { margin: 15px 0; width: 100%; }
+  table.pure-table tr td:first-child, table.pure-table tr th:first-child { padding-left: 12px; }
+  table.pure-table tr td:last-child, table.pure-table tr th:last-child { padding-right: 12px; }
+  table.pure-table img { float:left; padding: 5px 0; }
+  table.pure-table td { vertical-align: middle; }
+  .quantity { text-align: center; width: 60px !important; margin: 0 !important; }
+  </style>

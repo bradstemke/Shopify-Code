@@ -1,0 +1,16 @@
+Why use snippets? Snippets help us reuse and repurpose lines of code, and they also help us  organize long templates into just a handful of snippets. For example, the following code snippet will return a list of 5 related products:
+
+{% assign related_collection = product.collections.first.products | sort: 'price' %}
+
+  {% if related_collection.size > 0 %}
+    <div class="grid__related-products">
+     <h2>Related products</h2>
+     <div class="grid grid--no-gutters grid--uniform">
+       {% for product in related_collection limit: 5 %}
+        <div class="grid__item small--one-half medium-up--one-fifth">
+          {% include 'product-card', product: product %}
+        </div>
+       {% endfor %}
+     </div>
+    </div>
+  {% endif %}

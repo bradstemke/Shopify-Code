@@ -1,0 +1,27 @@
+##Back Button
+
+When a visitor navigates to a collection page, and then clicks on a product, they will be directed to that product.
+
+This method provides a back button, that directs them back to the current place within the collection they were in.
+
+For example, if they are on page 3 of the collection, and a click product, this back button will direct them back to that same place within the collection.
+
+It grabs the URL of the PDP, and checks for the ?page=# and then adds that to the back button path.
+
+###Add this to the JS
+
+  BackLink = function() {
+    var curPath = window.location.href,
+        prevPageNumber = curPath.split("?"),
+        prevPage = prevPageNumber[1],
+        PDPBackBtn = $('.product-back-btn'),
+        PDPBackBtnPath = $(PDPBackBtn).attr('href'),
+        PDPBackBtnPathUpdated = PDPBackBtnPath + '?' + prevPage;
+
+    $(PDPBackBtn).attr('href', PDPBackBtnPathUpdated);
+  };
+
+###Add this to the Collection Product Card
+This provides the page number once they are directed to the PDP page.
+
+  <a href="{{ product.url | within: collection }}?page={{ current_page }}" title="{{ product.title }}">{{ product.title }}</a>

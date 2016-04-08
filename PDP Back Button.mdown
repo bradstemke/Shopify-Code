@@ -8,7 +8,7 @@ For example, if they are on page 3 of the collection, and a click product, this 
 
 It grabs the URL of the PDP, and checks for the ?page=# and then adds that to the back button path.
 
-###Add this to the JS
+####Add this to the JS
 
 ```
   BackLink = function() {
@@ -23,7 +23,7 @@ It grabs the URL of the PDP, and checks for the ?page=# and then adds that to th
   };
 ```
 
-###Add this to the Collection Product Card
+####Add this to the Collection Product Card
 This provides the page number once they are directed to the PDP page.
 
 ```

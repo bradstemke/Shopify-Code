@@ -10,6 +10,7 @@ It grabs the URL of the PDP, and checks for the ?page=# and then adds that to th
 
 ###Add this to the JS
 
+```
   BackLink = function() {
     var curPath = window.location.href,
         prevPageNumber = curPath.split("?"),
@@ -20,8 +21,11 @@ It grabs the URL of the PDP, and checks for the ?page=# and then adds that to th
 
     $(PDPBackBtn).attr('href', PDPBackBtnPathUpdated);
   };
+```
 
 ###Add this to the Collection Product Card
 This provides the page number once they are directed to the PDP page.
 
+```
   <a href="{{ product.url | within: collection }}?page={{ current_page }}" title="{{ product.title }}">{{ product.title }}</a>
+```
